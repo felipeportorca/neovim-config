@@ -1,4 +1,4 @@
---[[
+--[[init
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -25,7 +25,7 @@ What is Kickstart?
   Kickstart.nvim is *not* a distribution.
 
   Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
+  The goal is that you can read every line of code, top-to-bottom, understand
     what your configuration is doing, and modify it to suit your needs.
 
     Once you've done that, you can start exploring, configuring and tinkering to
@@ -107,7 +107,12 @@ vim.g.have_nerd_font = true
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
-
+-- Navigation and tmux
+vim.keymap.set('n', '<c-k>', ':wincmd k<CR>')
+vim.keymap.set('n', '<c-j>', ':wincmd j<CR>')
+vim.keymap.set('n', '<c-h>', ':wincmd h<CR>')
+vim.keymap.set('n', '<c-l>', ':wincmd l<CR>')
+vim.opt.swapfile = false
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
@@ -268,6 +273,14 @@ require('lazy').setup({
       },
     },
   },
+  {
+    "cordx56/rustowl",
+    dependencies = { "neovim/nvim-lspconfig" },
+    config = function()
+      local lspconfig = require("lspconfig")
+      lspconfig.rustowlsp.setup({})
+    end,
+  },
 
   {
     'mrcjkb/rustaceanvim',
@@ -289,61 +302,74 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
-    'folke/which-key.nvim',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-    opts = {
-      -- delay between pressing a key and opening which-key (milliseconds)
-      -- this setting is independent of vim.opt.timeoutlen
-      delay = 0,
-      icons = {
-        -- set icon mappings to true if you have a Nerd Font
-        mappings = vim.g.have_nerd_font,
-        -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
-        -- default which-key.nvim defined Nerd Font icons, otherwise define a string table
-        keys = vim.g.have_nerd_font and {} or {
-          Up = '<Up> ',
-          Down = '<Down> ',
-          Left = '<Left> ',
-          Right = '<Right> ',
-          C = '<C-…> ',
-          M = '<M-…> ',
-          D = '<D-…> ',
-          S = '<S-…> ',
-          CR = '<CR> ',
-          Esc = '<Esc> ',
-          ScrollWheelDown = '<ScrollWheelDown> ',
-          ScrollWheelUp = '<ScrollWheelUp> ',
-          NL = '<NL> ',
-          BS = '<BS> ',
-          Space = '<Space> ',
-          Tab = '<Tab> ',
-          F1 = '<F1>',
-          F2 = '<F2>',
-          F3 = '<F3>',
-          F4 = '<F4>',
-          F5 = '<F5>',
-          F6 = '<F6>',
-          F7 = '<F7>',
-          F8 = '<F8>',
-          F9 = '<F9>',
-          F10 = '<F10>',
-          F11 = '<F11>',
-          F12 = '<F12>',
-        },
+   { -- Useful plugin to show you pending keybinds.
+     'folke/which-key.nvim',
+     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+     opts = {
+       -- delay between pressing a key and opening which-key (milliseconds)
+       -- this setting is independent of vim.opt.timeoutlen
+       delay = 0,
+       icons = {
+         -- set icon mappings to true if you have a Nerd Font
+         mappings = vim.g.have_nerd_font,
+         -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
+         -- default which-key.nvim defined Nerd Font icons, otherwise define a string table
+         keys = vim.g.have_nerd_font and {} or {
+           Up = '<Up> ',
+           Down = '<Down> ',
+           Left = '<Left> ',
+           Right = '<Right> ',
+           C = '<C-…> ',
+           M = '<M-…> ',
+           D = '<D-…> ',
+           S = '<S-…> ',
+           CR = '<CR> ',
+           Esc = '<Esc> ',
+           ScrollWheelDown = '<ScrollWheelDown> ',
+           ScrollWheelUp = '<ScrollWheelUp> ',
+           NL = '<NL> ',
+           BS = '<BS> ',
+           Space = '<Space> ',
+           Tab = '<Tab> ',
+           F1 = '<F1>',
+           F2 = '<F2>',
+           F3 = '<F3>',
+           F4 = '<F4>',
+           F5 = '<F5>',
+           F6 = '<F6>',
+           F7 = '<F7>',
+           F8 = '<F8>',
+           F9 = '<F9>',
+           F10 = '<F10>',
+           F11 = '<F11>',
+           F12 = '<F12>',
+         },
+       },
+  
+       -- Document existing key chains
+       spec = {
+         { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+         { '<leader>d', group = '[D]ocument' },
+         { '<leader>r', group = '[R]ename' },
+         { '<leader>s', group = '[S]earch' },
+         { '<leader>w', group = '[W]orkspace' },
+         { '<leader>t', group = '[T]oggle' },
+         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+       },
+     },
+   },
+  {
+      "kana/vim-textobj-user",
+      event = "VeryLazy",
+      -- lazy = false,
+  },
+  {
+      "kana/vim-textobj-function",
+      -- lazy = true,
+      event = "VeryLazy",
+      dependencies = {
+          "kana/vim-textobj-user",
       },
-
-      -- Document existing key chains
-      spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
-        { '<leader>d', group = '[D]ocument' },
-        { '<leader>r', group = '[R]ename' },
-        { '<leader>s', group = '[S]earch' },
-        { '<leader>w', group = '[W]orkspace' },
-        { '<leader>t', group = '[T]oggle' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-      },
-    },
   },
   {
     'folke/snacks.nvim',
@@ -540,14 +566,138 @@ require('lazy').setup({
       })
     end,
   },
+  {
+  "hkupty/iron.nvim",
+  config = function()
+    local iron = require("iron.core")
+    local view = require("iron.view")
 
+    iron.setup({
+      config = {
+        -- Whether a repl should be discarded or not
+        scratch_repl = true,
+        -- Your repl definitions come here
+        repl_definition = {
+          sh = {
+            command = { "zsh" },
+          },
+          python = {
+            command = { "ipython", "--no-autoindent" },
+          },
+          julia = {
+            command = { "julia" },
+          },
+          r = {
+            command = { "R" },
+          },
+        },
+        -- How the repl window will be displayed
+        repl_open_cmd = view.split.vertical.botright(50),
+      },
+      keymaps = {
+        send_motion = "<space>rm",
+        visual_send = "<space>rv",
+        send_file = "<space>rf",
+        send_line = "<space>rl",
+        send_mark = "<space>sm",
+        mark_motion = "<space>mc",
+        mark_visual = "<space>mc",
+        remove_mark = "<space>md",
+        cr = "<space>s<cr>",
+        interrupt = "<space>s<space>",
+        exit = "<space>rq",
+        clear = "<space>rc",
+      },
+      highlight = {
+        italic = true,
+      },
+      ignore_blank_lines = true,
+    })
+
+    -- iron also has a list of commands, see :h iron-commands for all available commands
+    vim.keymap.set("n", "<space>rs", "<cmd>IronRepl<cr>")
+    vim.keymap.set("n", "<space>rr", "<cmd>IronRestart<cr>")
+    vim.keymap.set("n", "<space>rf", "<cmd>IronFocus<cr>")
+    vim.keymap.set("n", "<space>rh", "<cmd>IronHide<cr>")
+  end,
+},
+  {
+    'christoomey/vim-tmux-navigator',
+    cmd = {
+      'TmuxNavigateLeft',
+      'TmuxNavigateDown',
+      'TmuxNavigateUp',
+      'TmuxNavigateRight',
+      'TmuxNavigatePrevious',
+      'TmuxNavigatorProcessList',
+    },
+    keys = {
+      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
+      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
+      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
+      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+      { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
+    },
+  },
   -- NOTE: Plugins can specify dependencies.
   --
   -- The dependencies are proper plugin specifications as well - anything
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
+  {
+    "jpalardy/vim-slime",
+    config = function()
+      -- Set vim-slime to work with tmux
+      vim.g.slime_target = "tmux"
+      -- Configure the tmux target: adjust 'socket_name' and 'target_pane' as needed
+      vim.g.slime_default_config = {
+        socket_name = "default",
+        target_pane = "{right-of}"
+      }
+      -- Optional: customize the key mapping if the default conflicts
+      -- For example, to map <Leader>s to send the selected text:
+      -- vim.api.nvim_set_keymap('v', '<Leader>s', '<Plug>SlimeRegionSend', {})
+    end,
+  },
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- Add any specific configurations here
+    },
+    dependencies = {
+      'MunifTanjim/nui.nvim',
+      'rcarriga/nvim-notify',
+    },
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    opts = {
+    -- add any options here
+    },
+  },
+  -- {
+  --   'linux-cultist/venv-selector.nvim',
+  --   dependencies = {
+  --     'neovim/nvim-lspconfig',
+  --     'nvim-telescope/telescope.nvim',
+  --     'mfussenegger/nvim-dap-python',
+  --   },
+  --   opts = {
+  --     -- Your options go here
+  --     name = '.venv',
+  --     -- auto_refresh = false
+  --   },
+  --   event = 'VeryLazy',
+  --   keys = {
+  --     -- Keymap to open VenvSelector to pick a venv.
+  --     { '<leader>vs', '<cmd>VenvSelect<cr>' },
+  --     -- Keymap to retrieve the venv from a cache (the one previously used for the same project directory).
+  --     { '<leader>vc', '<cmd>VenvSelectCached<cr>' },
+  --   },
+  -- },
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -653,23 +803,80 @@ require('lazy').setup({
     end,
   },
   {
-    'goolord/alpha-nvim',
-    lazy = true,
-  },
-  {
-    'saecki/crates.nvim',
-    tag = 'stable',
-    config = function()
-      require('crates').setup()
-    end,
-  },
-  {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
   -- LazyVim config
+  -- ~/.config/nvim/lua/plugins/indent.lua
+  {
+    'PawkyPenguin/vim-select-indent',
+    config = function()
+      -- Check if the SelectIndentVersion command exists
+      if vim.fn.exists ':SelectIndentVersion' == 2 then
+        -- Use indents as text objects
+        vim.api.nvim_set_keymap('o', 'ii', ':call selectindent#select_inner_indent()<CR>', { noremap = true, silent = true })
+        vim.api.nvim_set_keymap('o', 'ai', ':call selectindent#select_outer_indent()<CR>', { noremap = true, silent = true })
 
+        -- Select whole indents in visual mode
+        vim.api.nvim_set_keymap('x', 'ii', ':<C-u>call selectindent#select_inner_indent()<CR>', { noremap = true, silent = true })
+        vim.api.nvim_set_keymap('x', 'ai', ':<C-u>call selectindent#select_outer_indent()<CR>', { noremap = true, silent = true })
+      end
+    end,
+  },
+  {
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    lazy = true,
+    version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+    opts = {
+      provider = 'openai',
+      openai = {
+        api_key_name = 'OPENAI_API_KEY',
+      },
+      -- add any opts here
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = 'make',
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      --- The below dependencies are optional,
+      'echasnovski/mini.pick', -- for file_selector provider mini.pick
+      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'ibhagwan/fzf-lua', -- for file_selector provider fzf
+      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+      'zbirenbaum/copilot.lua', -- for providers='copilot'
+      {
+        -- support for image pasting
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { 'markdown', 'Avante' },
+        },
+        ft = { 'markdown', 'Avante' },
+      },
+    },
+  },
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -684,6 +891,10 @@ require('lazy').setup({
   },
   { 'Bilal2453/luvit-meta', lazy = true },
   {
+    "jeetsukumaran/vim-pythonsense",
+    ft = "python",
+  },
+  {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
     opts = {
@@ -695,7 +906,9 @@ require('lazy').setup({
     },
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
-      { 'williamboman/mason.nvim', opts = { ensure_installed = { 'pyright', 'mypy', 'ruff', 'black' } }, config = true }, -- NOTE: Must be loaded before dependants
+      { 
+        'williamboman/mason.nvim',
+      opts = { ensure_installed = { 'sqlfluff', 'pyright', 'mypy', 'ruff', 'black' } }, config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -705,6 +918,8 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
+      'Hoffs/omnisharp-extended-lsp.nvim',
+      'cordx56/rustowl',
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -819,15 +1034,14 @@ require('lazy').setup({
           -- code, if the language server you are using supports them
           --
           -- This may be unwanted, since they displace some of your code
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
-          end
+          -- if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          --   map('<leader>th', function()
+          --     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+          --   end, '[T]oggle Inlay [H]ints')
+          -- end
         end,
       })
 
-      vim.lsp.inlay_hint.enable(true)
       -- Change diagnostic symbols in the sign column (gutter)
       if vim.g.have_nerd_font then
         local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
@@ -918,50 +1132,23 @@ require('lazy').setup({
       }
     end,
   },
-
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
+  {
+    'junegunn/vim-easy-align', -- Easy alignment plugin
+    config = function()
+      -- Optionally add keybindings for convenience
+      vim.keymap.set('x', 'ga', '<Plug>(EasyAlign)', { noremap = false, silent = true })
+      vim.keymap.set('n', 'ga', '<Plug>(EasyAlign)', { noremap = false, silent = true })
+    end,
+  },
+  {
+    'matze/vim-move',
     keys = {
-      {
-        '<leader>f',
-        function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
-        end,
-        mode = '',
-        desc = '[F]ormat buffer',
-      },
-    },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        python = { 'isort', 'black' },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
+      { '<A-j>', '<Plug>MoveLineDown', mode = { 'n', 'v' } },
+      { '<A-k>', '<Plug>MoveLineUp', mode = { 'n', 'v' } },
+      { '<A-h>', '<Plug>MoveCharLeft', mode = { 'n', 'v' } },
+      { '<A-l>', '<Plug>MoveCharRight', mode = { 'n', 'v' } },
     },
   },
-
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
@@ -1089,24 +1276,24 @@ require('lazy').setup({
   },
   { 'catppuccin/nvim', name = 'catppuccin-mocha', priority = 1000 },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
-
+  -- { -- You can easily change to a different colorscheme.
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is.
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   init = function()
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'tokyonight-night'
+  --
+  --     -- You can configure highlights by doing something like:
+  --     vim.cmd.hi 'Comment gui=none'
+  --   end,
+  -- },
+  --
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -1138,7 +1325,7 @@ require('lazy').setup({
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
+      -- -@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
         return '%2l:%-2v'
       end
@@ -1147,56 +1334,132 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  { -- Highlight, edit, and navigate code
+  {
+    'williamboman/mason.nvim',
+    opts = {
+      ensure_installed = { 'sqlfluff' },
+    },
+  },
+  {
+    'nvimtools/none-ls.nvim',
+    dependencies = { 'williamboman/mason.nvim' }, -- Ensure Mason is installed
+    opts = function(_, opts)
+      local null_ls = require 'null-ls'
+      opts.sources = opts.sources or {}
+
+      -- Add sqlfluff for formatting
+      table.insert(
+        opts.sources,
+        null_ls.builtins.formatting.sqlfluff.with {
+          extra_args = { '--dialect', 'databricks' }, -- Change dialect if needed (e.g., "postgres", "bigquery")
+        }
+      )
+    end,
+  },
+  {
+    "mg979/vim-visual-multi",
+    config = function()
+      -- add custom configuration here, if needed
+    end,
+  },
+  -- nvim-dap-python: Adapter for debugging Python applications
+  -- Optional: nvim-dap-ui for a better debugging interface
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'nvim-neotest/nvim-nio',
+      'rcarriga/nvim-dap-ui',
+      'mfussenegger/nvim-dap-python',
+      'theHamsta/nvim-dap-virtual-text',
+    },
+    config = function()
+      local dap = require 'dap'
+      local dapui = require 'dapui'
+      local dap_python = require 'dap-python'
+      dap_python.setup("/Users/fpcarvalho/Documents/solar/accessment_custos/.venv/bin/activate")
+      require('dapui').setup {}
+      require('nvim-dap-virtual-text').setup {
+        commented = true, -- Show virtual text alongside comment
+      }
+
+
+      vim.fn.sign_define('DapBreakpoint', {
+        text = '',
+        texthl = 'DiagnosticSignError',
+        linehl = '',
+        numhl = '',
+      })
+
+      vim.fn.sign_define('DapBreakpointRejected', {
+        text = '', -- or "❌"
+        texthl = 'DiagnosticSignError',
+        linehl = '',
+        numhl = '',
+      })
+
+      vim.fn.sign_define('DapStopped', {
+        text = '', -- or "→"
+        texthl = 'DiagnosticSignWarn',
+        linehl = 'Visual',
+        numhl = 'DiagnosticSignWarn',
+      })
+
+      -- Automatically open/close DAP UI
+      dap.listeners.after.event_initialized['dapui_config'] = function()
+        dapui.open()
+      end
+    end,
+  },
+  {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = 'gnn',
-          node_incremental = 'grn',
-          scope_incremental = 'grc',
-          node_decremental = 'grm',
+    main = 'nvim-treesitter.configs',
+    config = function()
+      require('nvim-treesitter.configs').setup({
+        ensure_installed = { 'bash', 'sql', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'rust' },
+        auto_install = true,
+        indent = { enable = true },
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = false,
         },
-      },
-    },
-
-    -- add this to the file where you setup your other plugins:
-    {
-      'monkoose/neocodeium',
-      event = 'VeryLazy',
-      config = function()
-        local neocodeium = require 'neocodeium'
-        neocodeium.setup()
-        vim.keymap.set('i', '<A-f>', neocodeium.accept)
-      end,
-    },
-    -- {
-    --   'dbt_preview',
-    --   dir = '~/.config/nvim/lua/dbt_preview',
-    --   dependencies = { 'nvim-lua/plenary.nvim' }, -- Optional, if you need additional utils
-    --   cmd = 'DBTPreview', -- Lazy load on command
-    -- },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = 'gnn',
+            node_incremental = 'grn',
+            scope_incremental = 'grc',
+            node_decremental = 'grm',
+          },
+        },
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ["af"] = "@function.outer",
+              ["if"] = "@function.inner",
+              ["ac"] = "@class.outer",
+              ["ic"] = "@class.inner",
+            },
+          },
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_next_start = {
+              ["]f"] = "@function.outer",
+              ["]c"] = "@class.outer",
+            },
+            goto_previous_start = {
+              ["[f"] = "@function.outer",
+              ["[c"] = "@class.outer",
+            },
+          },
+        },
+      })
+      -- Explicitly enable highlighting after setup
+      vim.cmd('TSEnable highlight')
+    end,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
@@ -1290,17 +1553,17 @@ end)
 
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
-
--- Normal mode: Move line down
-map('n', '<A-j>', ':m .+1<CR>==', opts)
--- Normal mode: Move line up
-map('n', '<A-k>', ':m .-2<CR>==', opts)
-
--- Visual mode: Move selected lines down
-map('v', '<A-j>', ":m '>+1<CR>gv=gv", opts)
--- Visual mode: Move selected lines up
-map('v', '<A-k>', ":m '<-2<CR>gv=gv", opts)
-
+--
+-- -- Normal mode: Move line down
+-- map('n', '<A-j>', ':m .+1<CR>==', opts)
+-- -- Normal mode: Move line up
+-- map('n', '<A-k>', ':m .-2<CR>==', opts)
+--
+-- -- Visual mode: Move selected lines down
+-- map('v', '<A-j>', ":m '>+1<CR>gv=gv", opts)
+-- -- Visual mode: Move selected lines up
+-- map('v', '<A-k>', ":m '<-2<CR>gv=gv", opts)
+--
 vim.api.nvim_set_keymap('t', '<A-h>', '<C-\\><C-N><C-w>h', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('t', '<A-j>', '<C-\\><C-N><C-w>j', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('t', '<A-k>', '<C-\\><C-N><C-w>k', { noremap = true, silent = true })
@@ -1308,4 +1571,62 @@ vim.api.nvim_set_keymap('t', '<A-l>', '<C-\\><C-N><C-w>l', { noremap = true, sil
 vim.cmd 'hi Normal guibg=NONE ctermbg=NONE'
 require('dbt_preview').setup()
 
+-- Key mappings for nvim-dap
+vim.keymap.set('n', '<F5>', function()
+  require('dap').continue()
+end)
+vim.keymap.set('n', '<F10>', function()
+  require('dap').step_over()
+end)
+vim.keymap.set('n', '<F11>', function()
+  require('dap').step_into()
+end)
+vim.keymap.set('n', '<F12>', function()
+  require('dap').step_out()
+end)
+vim.keymap.set('n', '<Leader>b', function()
+  require('dap').toggle_breakpoint()
+end)
 map('n', '<A-d>', ':DBTPreview<CR>', opts)
+local null_ls = require 'null-ls'
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = "*.sql",
+  callback = function() vim.lsp.buf.format({
+    timeout_ms = 20000
+  }) end
+})
+-- Normal mode: move current line down/up
+map('n', '<c-j>', ':m .+1<CR>==', opts)
+map('n', '<c-k>', ':m .-2<CR>==', opts)
+
+-- Visual mode: move selected block down/up
+map('v', '<c-j>', ":m '>+1<CR>gv=gv", opts)
+map('v', '<c-k>', ":m '<-2<CR>gv=gv", opts)
+
+-- Insert mode: move current line down/up
+map('i', '<c-j>', '<Esc>:m .+1<CR>==gi', opts)
+map('i', '<c-k>', '<Esc>:m .-2<CR>==gi', opts)
+
+require("noice").setup({
+  routes = {
+    {
+      view = "notify",
+      filter = { event = "msg_showmode" },
+    },
+  },
+})
+require("lualine").setup({
+  sections = {
+    lualine_x = {
+      {
+        require("noice").api.statusline.mode.get,
+        cond = require("noice").api.statusline.mode.has,
+        color = { fg = "#ff9e64" },
+      }
+    },
+  },
+})
+require("lazydev").setup({
+  library = { "nvim-dap-ui" },
+})
